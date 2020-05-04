@@ -1,5 +1,3 @@
-const credentials = require('../credentials.json');
-
 import axios from 'axios';
 import * as meli from 'mercadolibre';
 
@@ -12,11 +10,11 @@ export class MercadoLivreConnector implements IMarketPlaceConnector {
   public identity: string = 'MercadoLivre';
 
   constructor() {
-    this.mlObject = new meli.Meli(credentials.ml.key, credentials.ml.secret);
+    this.mlObject = new meli.Meli(process.env.ML_KEY, process.env.ML_SECRET);
   }
 
   public authorize(code: string): string {
-    return this.mlObject.authorize(code, credentials.ml.authUrl, (err, result) => {
+    return this.mlObject.authorize(code, process.env.ML_AUTH_URL, (err, result) => {
   
       if (err) {
         console.error(err);
@@ -30,7 +28,7 @@ export class MercadoLivreConnector implements IMarketPlaceConnector {
   }
  
   public getRedirectUrl(): string {
-    return this.mlObject.getAuthURL(credentials.ml.authUrl);
+    return this.mlObject.getAuthURL(process.env.ML_AUTH_URL);
   }
 
   public async getQuestion(resource: string): Promise<any> {

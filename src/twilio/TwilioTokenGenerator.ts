@@ -5,12 +5,12 @@ const ChatGrant = AccessToken.ChatGrant;
 
 export class TwilioTokenGenerator {
 
-  constructor(credentials) {
-    this.accountSid = credentials.accountSid;
-    this.signingKeySid = credentials.signingKeySid
-    this.signingKeySecret = credentials.signingKeySecret || credentials.authToken;
-    this.serviceSid = credentials.serviceSid || credentials.instanceSid;
-    this.pushCredentialSid = credentials.pushCredentialSid
+  constructor() {
+    this.accountSid = process.env.TWILIO_ACCOUNT_SID;
+    this.signingKeySid = process.env.TWILIO_SIGNING_KEY_ID;
+    this.signingKeySecret = process.env.TWILIO_SIGNING_KEY_SECRET;
+    this.serviceSid = process.env.TWILIO_SERVICE_ID;
+    this.pushCredentialSid = process.env.TWILIO_PUSH_CREDENTIAL_SID;
   }
 
   private accountSid: string;

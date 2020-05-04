@@ -1,5 +1,3 @@
-const credentials = require('./credentials.json');
-
 import express from 'express';
 import cors from 'cors';
 
@@ -8,7 +6,7 @@ import * as chat from  'twilio-chat'
 import { TwilioTokenGenerator } from './twilio/TwilioTokenGenerator';
 import { MercadoLivreConnector } from './connectors/MercadoLivreConnector';
 
-const getTwilioToken = () => new TwilioTokenGenerator(credentials.twilio).getToken('olist-api');
+const getTwilioToken = () => new TwilioTokenGenerator().getToken('olist-api');
 
 const connector = new MercadoLivreConnector();
 
@@ -52,6 +50,10 @@ app.post('/notification', async (req, res, next) => {
 
 });
 
-app.listen(3000);
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`Application is running on port ${ PORT }`);
+});
 
 
