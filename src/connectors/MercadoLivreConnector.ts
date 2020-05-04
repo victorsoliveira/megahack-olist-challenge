@@ -1,9 +1,7 @@
 import axios from 'axios';
 import * as meli from 'mercadolibre';
 
-import { IMarketPlaceConnector } from './IMarketplaceConnector';
-
-export class MercadoLivreConnector implements IMarketPlaceConnector {
+export class MercadoLivreConnector {
 
   private mlObject: any;
   private accessToken: string;
