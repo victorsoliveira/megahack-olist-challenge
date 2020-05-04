@@ -5,6 +5,7 @@
     "main": "index.js",
     "scripts": {
         "dev": "nodemon src/server.ts",
+        "prestart": "npm install",
         "start": "ts-node src/server.ts",
         "test": "ts-node tests.ts"
     },
