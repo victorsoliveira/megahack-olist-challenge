@@ -38,8 +38,12 @@ export class MercadoLivreConnector implements IMarketPlaceConnector {
     return response.data;
   }
 
-  public async postAnswer(questionId: string, answer: string): Promise<void> {
-    await axios.post(`https://api.mercadolibre.com/answers?access_token=${this.accessToken}`, { question_id: questionId, text: answer });
+  public async postAnswer(questionId: number, answer: string): Promise<void> {
+    await axios.post(`https://api.mercadolibre.com/answers?access_token=${this.accessToken}`, JSON.stringify({ question_id: questionId, text: answer }), {
+      headers: {
+          'Content-Type': 'application/json',
+      }
+    });
   }
 
 }

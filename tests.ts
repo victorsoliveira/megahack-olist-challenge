@@ -1,4 +1,5 @@
 const stringSimilarity = require('string-similarity');
+import * as _ from 'lodash';
 
 let chunk_inefficient = (array, chunkSize) => {
     return [].concat.apply([],
@@ -1147,31 +1148,36 @@ const attributes = [
 
 var sanitizedAttributes = attributes.map(x=> {
   x.id = x.id.toLowerCase().replace(/[_]/gi, ' ').replace(/[-]/gi, '');
-  x.name = x.name.toLowerCase().replace(/[?.,;:|!_-]/gi, '');
+  x['sanitizedName']= x.name.toLowerCase().replace(/[?.,;:|!_-]/gi, '');
+  x['orderedSanitizedName'] = _.orderBy(x['sanitizedName'].split(' ')).join(' ');
   return x;
 });
 
-var question = 'como é o zoom digital?'.toLowerCase().replace(/[?.,;:|!_-]/gi, '');
+var question = 'como é o zoom ótico?'.toLowerCase().replace(/[?.,;:|!_-]/gi, '');
 var tokens = question.split(' ');
 
 var phrase = [];
 
 tokens.forEach(t => {
 
-  const matches = stringSimilarity.findBestMatch(t, sanitizedAttributes.map(x => x.name ));
+  const matches = stringSimilarity.findBestMatch(t, sanitizedAttributes.map(x => x['sanitizedName'] ));
 
   if (matches.bestMatch.rating > 0.4) {
+    console.log(matches.bestMatch);
     phrase.push(t);
   }
-  
+
 });
 
-var newQuestion = phrase.join(' ');
+var newQuestion = _.orderBy(phrase).join(' ');
 
 console.log(newQuestion);
 
-const newMatches = stringSimilarity.findBestMatch(newQuestion, sanitizedAttributes.map(x => x.name ));
+const newMatches = stringSimilarity.findBestMatch(newQuestion, sanitizedAttributes.map(x => x['orderedSanitizedName'] ));
 
 if (newMatches.bestMatch.rating >= 0.4){
   console.log(newMatches.bestMatch);
+
+  let foundAttr = sanitizedAttributes.find(x=> x['orderedSanitizedName'] === newMatches.bestMatch.target);
+  console.log(`Você perguntou por  "${foundAttr.name}" ?  Nesse caso o valor do "${foundAttr.name}" é "${foundAttr.value_name}" ! Caso não tenha atendido a sua expectativa tente ser mais específico(a) por favor.`);
 }

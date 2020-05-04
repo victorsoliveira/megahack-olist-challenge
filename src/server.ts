@@ -33,22 +33,22 @@ app.post('/notification', async (req, res, next) => {
   const question = await connector.getQuestion(req.body.resource);
 
   // Inicia chat com bot
+  const channelFriendlyName = `${connector.identity}_${question.from.id}_${question.item_id}`
   const client = await chat.Client.create(getTwilioToken());
-  const channel = await client.createChannel({ friendlyName: question.item_id });
+  const channel = await client.createChannel({ friendlyName: channelFriendlyName });
   const activeChannel = await channel.join();
 
   activeChannel.on('messageAdded', async (message) => {
     
-    //Se a pensagem postada for do Bot prossegue para resposta no mercado livre
+    //Se a mensagem postada for do Bot prossegue para resposta no mercado livre
     if (message.author === 'system') {
       await connector.postAnswer(question.id, message.body);
-      console.log(`Resposta postada com sucesso para ${connector.identity}`);
-    }
+    }});
 
-  });
-
+  // Envia mensagem para processamento
   activeChannel.sendMessage(question.text);
-  res.send();
+
+  res.send("ok");
 
 });
 
