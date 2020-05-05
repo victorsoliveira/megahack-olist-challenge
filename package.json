@@ -7,10 +7,10 @@
         "dev": "nodemon src/server.ts",
         "prestart": "npm install",
         "postinstall": "npm run build",
-        "build": "npm run tsc",
+        "build": "npm run tsc -- -p .",
         "start": "node ./build/server.js",
         "test": "ts-node sample.tests.ts",
-        "tsc": "tsc -p ."
+        "tsc": "tsc"
     },
     "keywords": [],
     "author": "",
