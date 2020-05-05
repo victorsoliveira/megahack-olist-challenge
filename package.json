@@ -5,10 +5,12 @@
     "main": "./build/server.js",
     "scripts": {
         "dev": "nodemon src/server.ts",
-        "prestart": "npm install && npm run build",
-        "build": "tsc -p .",
+        "prestart": "npm install",
+        "postinstall": "npm run build",
+        "build": "npm run tsc",
         "start": "node ./build/server.js",
-        "test": "ts-node sample.tests.ts"
+        "test": "ts-node sample.tests.ts",
+        "tsc": "tsc -p ."
     },
     "keywords": [],
     "author": "",
