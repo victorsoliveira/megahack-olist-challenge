@@ -1,9 +1,10 @@
 exports.handler = function(context, event, callback) {
 
-  const axios = require('axios');
-  const stringSimilarity = require('string-similarity');
+    const axios = require('axios');
+    const stringSimilarity = require('string-similarity');
+    const _ = require('lodash');
 
-  const twilioClient = context.getTwilioClient();
+    const twilioClient = context.getTwilioClient();
 	const memory = JSON.parse(event.Memory);
 	const question = event.CurrentInput.toLowerCase().replace(/[?.,;:|!_-]/gi, '');
 
@@ -15,14 +16,21 @@ exports.handler = function(context, event, callback) {
     }).then((response) => {
         
         const chatInfo = JSON.parse(response.body);
+
+        const composedFriendlyName = chatInfo.friendly_name;
+
+        const marketplaceIdentity = composedFriendlyName.split('_')[0];
+        const userId = composedFriendlyName.split('_')[1];
+        const productId = composedFriendlyName.split('_')[2];
         
-        axios.get(`https://api.mercadolibre.com/items/${chatInfo.friendly_name}`)
+        axios.get(`https://api.mercadolibre.com/items/${productId}`)
             .then((response) => {
                 
                 const attributes = response.data.attributes.map(x=> {
-                    x.id = x.id.toLowerCase().replace(/[_]/gi, ' ').replace(/[-]/gi, '');
-                    x.name = x.name.toLowerCase().replace(/[?.,;:|!_-]/gi, '');
-                    return x;
+                  x.id = x.id.toLowerCase().replace(/[_]/gi, ' ').replace(/[-]/gi, '');
+                  x['sanitizedName']= x.name.toLowerCase().replace(/[?.,;:|!_-]/gi, '');
+                  x['orderedSanitizedName'] = _.orderBy(x['sanitizedName'].split(' ')).join(' ');
+                  return x;
                 });
                 
                 const tokens = question.split(' ');
@@ -31,7 +39,7 @@ exports.handler = function(context, event, callback) {
 
                 tokens.forEach(t => {
                 
-                  const tokenMatches = stringSimilarity.findBestMatch(t, attributes.map(x => x.name));
+                  const tokenMatches = stringSimilarity.findBestMatch(t, attributes.map(x => x['sanitizedName']));
                 
                   if (tokenMatches.bestMatch.rating > 0.4) {
                       phrase.push(t);
@@ -42,9 +50,9 @@ exports.handler = function(context, event, callback) {
                 let message = "";
                 let match = null
                 
-                const newQuestion = phrase.join(' ');
+                const newQuestion = _.orderBy(phrase).join(' ');
                 
-                const questionMatches = stringSimilarity.findBestMatch(newQuestion, attributes.map(x => x.name));
+                const questionMatches = stringSimilarity.findBestMatch(newQuestion, attributes.map(x => x['orderedSanitizedName']));
                 
                 if (questionMatches.bestMatch.rating >= 0.4){
                     console.log('attrs -> ', questionMatches.bestMatch);
@@ -52,7 +60,7 @@ exports.handler = function(context, event, callback) {
                 }
 
                 if (match){
-                    message = `De acordo com as características ${match.name} é igual a ${match.value_name}! Caso não tenha atendido a sua expectativa tente ser mais específico(a) por favor.`
+                    message = `Você perguntou por ${match.name} ? Nesse caso o valor de ${match.name} é ${match.value_name} ! Caso não tenha atendido a sua expectativa tente ser mais específico(a) por favor.`
                 } else {
                     message = "Não encontramos nenhuma característica que responda a sua pergunta de forma eficiente, pode ser mais especifico(a) ?"
                 }
