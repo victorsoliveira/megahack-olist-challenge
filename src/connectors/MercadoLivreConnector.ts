@@ -30,8 +30,11 @@ export class MercadoLivreConnector {
   }
 
   public async getQuestion(resource: string): Promise<any> {
-    const response = await axios.get(`https://api.mercadolibre.com${resource}?access_token=${this.accessToken}`);
-    return response.data;
+    if (resource) {
+      const response = await axios.get(`https://api.mercadolibre.com${resource}?access_token=${this.accessToken}`);
+      return response.data;  
+    }
+    return Promise.resolve('');
   }
 
   public async postAnswer(questionId: number, answer: string): Promise<void> {

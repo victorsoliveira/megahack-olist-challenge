@@ -33,14 +33,16 @@ app.post('/notification', async (req, res, next) => {
   // Pega nova pergunta
   const question = await connector.getQuestion(req.body.resource);
 
-  // Inicia chat com bot
-  const channelFriendlyName = `${connector.identity}_${question.from.id}_${question.item_id}`
-  const client = await chat.Client.create(getTwilioToken());
-  const channel = await client.createChannel({ friendlyName: channelFriendlyName });
-  const activeChannel = await channel.join();
+  if (question) {
 
-  activeChannel.on('messageAdded', async (message) => {
-    
+    // Inicia chat com bot
+    const channelFriendlyName = `${connector.identity}_${question.from.id}_${question.item_id}`
+    const client = await chat.Client.create(getTwilioToken());
+    const channel = await client.createChannel({ friendlyName: channelFriendlyName });
+    const activeChannel = await channel.join();
+
+    activeChannel.on('messageAdded', async (message) => {
+      
     //Se a mensagem postada for do Bot prossegue para resposta no mercado livre
     if (message.author === 'system') {
       console.log("Resposta resolvida!");
@@ -50,10 +52,14 @@ app.post('/notification', async (req, res, next) => {
       console.log(`Resposta postada com sucesso em ${connector.identity}`);
     }});
 
-  console.log("Enviando pergunta", question.text);
+    console.log("Enviando pergunta", question.text);
 
-  // Envia mensagem para processamento
-  activeChannel.sendMessage(question.text);
+    // Envia mensagem para processamento
+    activeChannel.sendMessage(question.text);
+      
+  } else {
+    console.warn("Notificação de pergunta recebida sem conteúdo!");
+  }
 
   res.send();
 
