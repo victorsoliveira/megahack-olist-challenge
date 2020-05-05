@@ -26,6 +26,8 @@ app.get('/auth', (req, res, next) => {
 });
 
 app.post('/notification', async (req, res, next) => {
+  
+  console.log("Pergunta recebida! ");
 
   // Pega nova pergunta
   const question = await connector.getQuestion(req.body.resource);
@@ -40,20 +42,24 @@ app.post('/notification', async (req, res, next) => {
     
     //Se a mensagem postada for do Bot prossegue para resposta no mercado livre
     if (message.author === 'system') {
+      console.log("Resposta resolvida!");
+      console.log("Resposta -> ", message.body);
+      console.log("Encaminhando ao marketplace...");
       await connector.postAnswer(question.id, message.body);
+      console.log(`Resposta postada com sucesso em ${connector.identity}`);
     }});
 
+  console.log("Enviando pergunta", question.text);
   // Envia mensagem para processamento
   activeChannel.sendMessage(question.text);
 
-  res.send("ok");
+  res.send();
 
 });
 
 const PORT = process.env.PORT || 3000;
-
 app.listen(PORT, () => {
-    console.log(`Application is running on port ${ PORT }`);
+    console.log(`Olist application is running on port ${ PORT }`);
 });
 
 
