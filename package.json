@@ -9,7 +9,7 @@
         "postinstall": "npm run build",
         "build": "npm run tsc -- -p .",
         "start": "node ./build/server.js",
-        "test": "ts-node sample.tests.ts",
+        "test": "ts-node sample.test.ts",
         "tsc": "tsc"
     },
     "keywords": [],
