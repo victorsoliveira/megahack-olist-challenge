@@ -23,7 +23,7 @@ app.get('/connect', (req, res, next) => {
 
 app.get('/auth', (req, res, next) => {
   connector.authorize(req.query.code.toString());
-  res.send('Autorized !');
+  res.send('Aplicação autenticada com sucesso !');
 });
 
 app.post('/notification', async (req, res, next) => {
