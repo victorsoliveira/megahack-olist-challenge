@@ -14,6 +14,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors({ origin: true }));
+app.use(express.static('public'));
 
 app.get('/connect', (req, res, next) => {
   const redirectUrl = connector.getRedirectUrl();
@@ -50,6 +51,7 @@ app.post('/notification', async (req, res, next) => {
     }});
 
   console.log("Enviando pergunta", question.text);
+
   // Envia mensagem para processamento
   activeChannel.sendMessage(question.text);
 
