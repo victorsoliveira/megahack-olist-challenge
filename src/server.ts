@@ -33,6 +33,7 @@ app.post('/notification', async (req, res, next) => {
   // Pega nova pergunta
   const question = await connector.getQuestion(req.body.resource);
 
+
   // Inicia chat com bot
   const channelFriendlyName = `${connector.identity}_${question.from.id}_${question.item_id}`
   const client = await chat.Client.create(getTwilioToken());
@@ -43,11 +44,15 @@ app.post('/notification', async (req, res, next) => {
     
   //Se a mensagem postada for do Bot prossegue para resposta no mercado livre
   if (message.author === 'system') {
+    
     console.log("Resposta resolvida!");
     console.log("Resposta -> ", message.body);
     console.log("Encaminhando ao marketplace...");
+    
     await connector.postAnswer(question.id, message.body);
     console.log(`Resposta postada com sucesso em ${connector.identity}`);
+
+    await activeChannel.delete();
   }});
 
   console.log("Enviando pergunta", question.text);
